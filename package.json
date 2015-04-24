@@ -1,0 +1,40 @@
+{
+  "name": "LaconaCommand-OpenApp",
+  "version": "0.0.1",
+  "description": "Lacona Command for opening applications",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "babel src --out-dir lib",
+    "clean": "rimraf lib",
+    "prepublish": "npm run clean && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brandonhorst/LaconaCommand-OpenApp.git"
+  },
+  "keywords": [
+    "LaconaCommand",
+    "open",
+    "app",
+    "application",
+    "launch"
+  ],
+  "author": "@brandonhorst",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/brandonhorst/LaconaCommand-OpenApp/issues"
+  },
+  "homepage": "https://github.com/brandonhorst/LaconaCommand-OpenApp",
+  "devDependencies": {
+    "babel": "^5.0.0",
+    "chai": "^2.2.0",
+    "lacona": "^0.22.0",
+    "mocha": "^2.2.1",
+    "rimraf": "^2.3.2"
+  },
+  "dependencies": {
+    "lacona-phrase": "^0.7.0",
+    "open": "0.0.5",
+    "osa": "^2.2.0"
+  }
+}
