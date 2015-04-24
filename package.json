@@ -1,5 +1,5 @@
 {
-  "name": "LaconaCommand-OpenApp",
+  "name": "open-applications",
   "version": "0.0.1",
   "description": "Lacona Command for opening applications",
   "main": "lib/index.js",
@@ -13,7 +13,7 @@
     "url": "https://github.com/brandonhorst/LaconaCommand-OpenApp.git"
   },
   "keywords": [
-    "LaconaCommand",
+    "laconacommand",
     "open",
     "app",
     "application",
