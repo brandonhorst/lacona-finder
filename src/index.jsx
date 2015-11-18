@@ -144,14 +144,8 @@ export class Sentence extends Phrase {
   }
 }
 
-// export default {
-//   sentences: [OpenApp],
-//   translations: [{
-//     langs: ['en', 'default'],
-//     information: {
-//       title: 'Open Application',
-//       description: 'Quickly launch applications on your computer',
-//       examples: ['open Safari', 'open Contacts']
-//     }
-//   }]
-// }
+export default {
+  sentences: [
+    {Sentence, execute}
+  ]
+}
