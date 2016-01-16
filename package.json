@@ -4,7 +4,7 @@
   "description": "Lacona Command for opening apps, files, pref panes, and urls",
   "main": "lib/index.js",
   "scripts": {
-    "build": "babel src --out-dir lib",
+    "build": "babel --stage 0 src --out-dir lib",
     "clean": "rimraf lib",
     "prepublish": "npm run clean && npm run build"
   },
@@ -27,14 +27,13 @@
   "homepage": "https://github.com/brandonhorst/lacona-command-open",
   "devDependencies": {
     "babel": "^5.8.23",
-    "chai": "^3.2.0",
-    "lacona": "^0.27.0",
-    "mocha": "^2.3.2",
-    "rimraf": "^2.4.3"
+    "chai": "^3.4.1",
+    "lacona": "^0.35.0",
+    "mocha": "^2.3.4",
+    "rimraf": "^2.5.0"
   },
   "dependencies": {
-    "lacona-phrase": "^0.7.0",
-    "lacona-phrase-application": "0.0.1",
+    "lacona-phrase": "^0.9.1",
     "lodash": "^3.10.1"
   }
 }
