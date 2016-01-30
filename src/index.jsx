@@ -67,7 +67,6 @@ class CommandObject {
   }
 
   _demoExecute () {
-    console.log(this.result)
     if (this.result.verb === 'open') {
       return outputifyOpen(this.result.items)
     } else if (this.result.verb === 'openin') {
