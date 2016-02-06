@@ -6,7 +6,7 @@ import { URL } from 'lacona-phrase-url'
 import { File } from 'lacona-phrase-file'
 import { Command } from 'lacona-command'
 import { Application, PreferencePane, RunningApplication, ContentArea, MountedVolume } from 'lacona-phrase-system'
-import { openURL, openFile } from 'lacona-api'
+import { openURL, openFile, unmountAllVolumes } from 'lacona-api'
 
 function andify (array, separator = ', ') {
   if (array.length === 1) {
@@ -68,14 +68,16 @@ class CommandObject {
 
   _demoExecute () {
     if (this.result.verb === 'open') {
-      return outputifyOpen(this.result.items)
-    } else if (this.result.verb === 'openin') {
-      return _.flatten([
-        {text: 'open ', category: 'action'},
-        outputify(this.result.items),
-        {text: ' in '},
-        outputify(this.result.apps),
-      ])
+      if (this.result.apps) {
+        return _.flatten([
+          {text: 'open ', category: 'action'},
+          outputify(this.result.items),
+          {text: ' in '},
+          outputify(this.result.apps),
+        ])
+      } else {
+        return outputifyOpen(this.result.items)
+      }
     } else if (this.result.verb === 'switch') {
       return _.flatten([
         {text: 'switch focus to ', category: 'action'},
@@ -108,23 +110,23 @@ class CommandObject {
   execute () {
     if (this.result.verb === 'open') {
       this.result.items.forEach(item => {
-        if (item.open) {
-          item.open()
-        } else if (item.url) {
-          openURL({url: item.url})
-        } else if (item.path) {
-          openFile({path: item.path})
-        }
-      })
-    } else if (this.result.verb === 'openin') {
-      this.result.items.forEach(item => {
-        this.result.apps.forEach(app => {
-          if (item.url) {
-            app.openURL(item.url)
+        if (this.result.apps) {
+          this.result.apps.forEach(app => {
+            if (item.url) {
+              app.openURL(item.url)
+            } else if (item.path) {
+              app.openFile(item.path)
+            }
+          })
+        } else {
+          if (item.open) {
+            item.open()
+          } else if (item.url) {
+            openURL({url: item.url})
           } else if (item.path) {
-            app.openFile(item.path)
+            openFile({path: item.path})
           }
-        })
+        }
       })
     } else if (this.result.verb === 'switch') {
       if (this.result.item.activate) this.result.item.activate()
@@ -144,6 +146,8 @@ class CommandObject {
       _.forEach(this.result.items, item => {
         if (item.eject) item.eject()
       })
+    } else if (this.result.verb === 'eject-all') {
+      unmountAllVolumes()
     }
   }
 }
@@ -170,14 +174,12 @@ export class Open extends Phrase {
                 <Application />
                 <PreferencePane />
                 <MountedVolume />
-                <URL splitOn={/\s|,/} id='url' />
-                <File id='path' />
               </choice>
             </repeat>
           </sequence>
           <sequence>
-            <literal text='open ' category='action' id='verb' value='openin' />
-            <repeat unique id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />}>
+            <literal text='open ' category='action' id='verb' value='open' />
+            <repeat unique id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} ellipsis>
               <choice>
                 <URL splitOn={/\s|,/} id='url' />
                 <File id='path' />
