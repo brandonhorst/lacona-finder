@@ -171,8 +171,8 @@ export class Open extends Phrase {
             <literal text='open ' category='action' id='verb' value='open' />
             <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />}>
               <choice>
-                <Application />
-                <PreferencePane />
+                <Application score={1} />
+                <PreferencePane score={1} />
                 <MountedVolume />
               </choice>
             </repeat>
