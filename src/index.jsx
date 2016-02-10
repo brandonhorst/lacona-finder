@@ -161,35 +161,37 @@ export class Open extends Phrase {
     }
     return true
   }
+
+  filter (result) {
+    if (result.openin && _.some(result.items, item => item.open)) {
+      return false
+    }
+    return true
+  }
   
   // TODO add canOpen, canEject, ... support
   describe () {
     return (
       <map function={result => new CommandObject(result)}>
         <choice>
-          <sequence>
-            <literal text='open ' category='action' id='verb' value='open' />
-            <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />}>
-              <choice>
-                <Application score={1} />
-                <PreferencePane score={1} />
-                <MountedVolume />
-              </choice>
-            </repeat>
-          </sequence>
-          <sequence>
-            <literal text='open ' category='action' id='verb' value='open' />
-            <repeat unique id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} ellipsis>
-              <choice>
-                <URL splitOn={/\s|,/} id='url' />
-                <File id='path' />
-              </choice>
-            </repeat>
-            <list items={[' in ', ' using ', ' with ']} limit={1} category='conjunction' />
-            <repeat unique id='apps' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />}>
-              <Application />
-            </repeat>
-          </sequence>
+          <filter function={this.filter} _incomplete>
+            <sequence>
+              <literal text='open ' category='action' id='verb' value='open' />
+              <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} ellipsis>
+                <choice>
+                  <Application score={1} />
+                  <PreferencePane score={1} />
+                  <MountedVolume />
+                  <URL splitOn={/\s|,/} id='url' />
+                  <File id='path' />
+                </choice>
+              </repeat>
+              <list items={[' in ', ' using ', ' with ']} limit={1} category='conjunction' id='openin' value />
+              <repeat unique id='apps' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />}>
+                <Application />
+              </repeat>
+            </sequence>
+          </filter>
           <sequence>
             <literal text='switch to ' category='action' id='verb' value='switch' />
             <choice id='item'>
