@@ -55,6 +55,8 @@ export const Open = {
     }
   },
 
+  demoExecute,
+
   filterResult (result) {
     if (result.verb === 'eject' && _.some(result.items, item => !item.canEject())) {
       return false
