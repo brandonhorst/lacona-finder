@@ -1,6 +1,6 @@
 {
   "name": "lacona-finder",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Lacona commands for opening apps, files, pref panes, and urls",
   "main": "lib/index.js",
   "scripts": {
