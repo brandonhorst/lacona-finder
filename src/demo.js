@@ -47,6 +47,9 @@ function outputifyOpen (objs) {
   if (groups['preference pane']) {
     message.push(_.flatten([{text: 'open ', category: 'action'}, {text: ' the '}, outputify(groups['preference pane']), {text: ' system preference pane'}]))
   }
+  if (groups['contact card']) {
+    message.push(_.flatten([{text: 'open ', category: 'action'}, outputify(groups['contact card']), {text: ' in '}, {text: 'Contacts', argument: 'application'}]))
+  }
 
   return _.flatten(andify(message, '; '))
 }

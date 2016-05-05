@@ -4,7 +4,7 @@ import _ from 'lodash'
 import { createElement } from 'elliptical'
 import { URL } from 'elliptical-url'
 import { Command } from 'lacona-command'
-import { Application, PreferencePane, RunningApplication, ContentArea, MountedVolume, File } from 'lacona-phrases'
+import { Application, PreferencePane, RunningApplication, ContentArea, MountedVolume, File, ContactCard } from 'lacona-phrases'
 import { openURL, openFile, unmountAllVolumes } from 'lacona-api'
 import demoExecute from './demo'
 
@@ -57,13 +57,6 @@ export const Open = {
 
   demoExecute,
 
-  filterResult (result) {
-    if (result.verb === 'eject' && _.some(result.items, item => !item.canEject())) {
-      return false
-    }
-    return true
-  },
-
   // TODO add canOpen, canEject, ... support
   describe () {
     return (
@@ -78,6 +71,7 @@ export const Open = {
                 <MountedVolume />
                 <URL splitOn={/\s|,/} id='url' />
                 <File id='path' />
+                <ContactCard />
               </choice>
             </repeat>
             <list items={[' in ', ' using ', ' with ']} limit={1} category='conjunction' id='openin' value />
@@ -132,6 +126,22 @@ function filterOption (option) {
   if (option.result.openin && _.some(option.result.items, item => item.open)) {
     return false
   }
+
+  if (option.result.verb === 'eject' &&
+      _.some(option.result.items, item => !item.canEject())) {
+    return false
+  }
+
+  if (option.result.verb === 'open') {
+    const counts = _.chain(option.result.items)
+      .filter('limitId')
+      .countBy('limitId')
+      .value()
+    if (_.some(counts, count => count > 1)) {
+      return false
+    }
+  }
+
   return true
 }
 
