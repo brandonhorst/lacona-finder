@@ -1,11 +1,10 @@
 /** @jsx createElement */
 
-import _ from 'lodash'
 import { createElement } from 'elliptical'
-import { URL } from 'elliptical-url'
-import { Command } from 'lacona-command'
-import { Application, PreferencePane, RunningApplication, ContentArea, MountedVolume, File, ContactCard } from 'lacona-phrases'
+import { Application, PreferencePane, RunningApplication, ContentArea, MountedVolume, File, ContactCard, URL, Command } from 'lacona-phrases'
 import { openURL, openFile, unmountAllVolumes } from 'lacona-api'
+
+import _ from 'lodash'
 import demoExecute from './demo'
 
 export const Open = {
@@ -145,4 +144,4 @@ function filterOption (option) {
   return true
 }
 
-export const extensions = [Open]
+export default [Open]
