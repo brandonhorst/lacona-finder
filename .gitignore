@@ -28,5 +28,4 @@ node_modules
 .lock-wscript
 
 lib
-tmp
 build
