@@ -1,7 +1,7 @@
 /** @jsx createElement */
 
 import { createElement } from 'elliptical'
-import { Application, PreferencePane, RunningApplication, ContentArea, MountedVolume, File, ContactCard, URL, Command } from 'lacona-phrases'
+import { Application, PreferencePane, RunningApplication, ContentArea, MountedVolume, File, Directory, ContactCard, URL, Command } from 'lacona-phrases'
 import { openURL, openFile, unmountAllVolumes } from 'lacona-api'
 
 import _ from 'lodash'
@@ -59,8 +59,8 @@ export const Open = {
   // TODO add canOpen, canEject, ... support
   describe () {
     return (
-      <choice>
-        <filter outbound={filterOption}>
+      <filter outbound={filterOutput}>
+        <choice>
           <sequence>
             <literal text='open ' category='action' id='verb' value='open' />
             <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} ellipsis>
@@ -69,6 +69,7 @@ export const Open = {
                 <PreferencePane />
                 <MountedVolume />
                 <URL splitOn={/\s|,/} id='url' />
+                <Directory id='path' />
                 <File id='path' />
                 <ContactCard />
               </choice>
@@ -78,76 +79,77 @@ export const Open = {
               <Application />
             </repeat>
           </sequence>
-        </filter>
-        <sequence>
-          <literal text='switch to ' category='action' id='verb' value='switch' />
-          <choice id='item'>
-            <RunningApplication />
-            <ContentArea />
-          </choice>
-        </sequence>
-        <sequence>
-          <list items={['quit ', 'kill ']} category='action' id='verb' value='quit' />
-          <repeat unique id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />}>
-            <RunningApplication />
-          </repeat>
-        </sequence>
-        <sequence>
-          <list items={['hide ']} category='action' id='verb' value='hide' />
-          <repeat unique id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />}>
-            <RunningApplication />
-          </repeat>
-        </sequence>
-        <sequence>
-          <literal text='close ' category='action' id='verb' value='close' />
-          <repeat unique id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />}>
-            <choice>
+          <sequence>
+            <literal text='switch to ' category='action' id='verb' value='switch' />
+            <choice id='item'>
               <RunningApplication />
               <ContentArea />
             </choice>
-          </repeat>
-        </sequence>
-        <sequence>
-          <list items={['eject ', 'unmount ', 'dismount ']} category='action' id='verb' value='eject' />
-          <choice merge>
-            <list items={['all', 'everything', 'all devices']} limit={1} category='action' id='verb' value='eject-all' />
-            <repeat id='items' separator={<list items={[', ', ', and ', ' and ']} limit={1} />}>
-              <MountedVolume />
+          </sequence>
+          <sequence>
+            <list items={['quit ', 'kill ']} category='action' id='verb' value='quit' />
+            <repeat unique id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />}>
+              <RunningApplication />
             </repeat>
-          </choice>
-        </sequence>
-      </choice>
+          </sequence>
+          <sequence>
+            <list items={['hide ']} category='action' id='verb' value='hide' />
+            <repeat unique id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />}>
+              <RunningApplication />
+            </repeat>
+          </sequence>
+          <sequence>
+            <literal text='close ' category='action' id='verb' value='close' />
+            <repeat unique id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />}>
+              <choice>
+                <RunningApplication />
+                <ContentArea />
+              </choice>
+            </repeat>
+          </sequence>
+          <sequence>
+            <list items={['eject ', 'unmount ', 'dismount ']} category='action' id='verb' value='eject' />
+            <choice merge>
+              <list items={['all', 'everything', 'all devices']} limit={1} category='action' id='verb' value='eject-all' />
+              <repeat id='items' separator={<list items={[', ', ', and ', ' and ']} limit={1} />}>
+                <MountedVolume />
+              </repeat>
+            </choice>
+          </sequence>
+        </choice>
+      </filter>
     )
   }
 }
 
-function filterOption (option) {
-  if (option.result.openin && _.some(option.result.items, item => item.open)) {
+function filterOutput (option) {
+  const result = option.result
+  if (result.openin && _.some(result.items, item => item.open)) {
     return false
   }
 
-  if (option.result.verb === 'eject' &&
-      _.some(option.result.items, item => !item.eject)) {
+  if (result.verb === 'eject' &&
+      _.some(result.items, item => !item.eject)) {
     return false
   }
 
-  if (option.result.verb === 'switch' &&
-      _.some(option.result.items, item => !item.activate)) {
+
+  if (result.verb === 'switch' && result.item && !result.item.activate) {
     return false
   }
 
-  if (option.result.verb === 'hide' &&
-      _.some(option.result.items, item => !item.hide)) {
+  if (result.verb === 'hide' &&
+      _.some(result.items, item => !item.hide)) {
     return false
   }
 
-  if (option.result.verb === 'close' &&
-      _.some(option.result.items, item => !item.close)) {
+  if (result.verb === 'close' &&
+      _.some(result.items, item => !item.close)) {
     return false
   }
 
-  if (option.result.verb === 'open') {
-    const counts = _.chain(option.result.items)
+  if (result.verb === 'open') {
+    const counts = _.chain(result.items)
       .filter('limitId')
       .countBy('limitId')
       .value()
