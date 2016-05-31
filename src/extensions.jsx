@@ -127,7 +127,22 @@ function filterOption (option) {
   }
 
   if (option.result.verb === 'eject' &&
-      _.some(option.result.items, item => !item.canEject())) {
+      _.some(option.result.items, item => !item.eject)) {
+    return false
+  }
+
+  if (option.result.verb === 'switch' &&
+      _.some(option.result.items, item => !item.activate)) {
+    return false
+  }
+
+  if (option.result.verb === 'hide' &&
+      _.some(option.result.items, item => !item.hide)) {
+    return false
+  }
+
+  if (option.result.verb === 'close' &&
+      _.some(option.result.items, item => !item.close)) {
     return false
   }
 
