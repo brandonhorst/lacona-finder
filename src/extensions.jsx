@@ -33,6 +33,17 @@ export const Open = {
       })
     } else if (result.verb === 'switch') {
       if (result.item.activate) result.item.activate()
+    } else if (result.verb === 'relaunch') {
+      _.forEach(result.items, item => {
+        if (item.quit) item.quit((err) => {
+          if (err) {
+            console.log('Error quitting')
+            console.error(err)
+          } else {
+            item.launch()
+          }
+        })
+      })
     } else if (result.verb === 'quit') {
       _.forEach(result.items, item => {
         if (item.quit) item.quit()
@@ -76,33 +87,39 @@ export const Open = {
             </repeat>
             <list items={[' in ', ' using ', ' with ']} limit={1} category='conjunction' id='openin' value />
             <repeat unique id='apps' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />}>
-              <Application />
+              <Application suppressEmpty={false} />
             </repeat>
           </sequence>
           <sequence>
-            <literal text='switch to ' category='action' id='verb' value='switch' />
+            <list items={['switch to ', 'activate ']} id='verb' value='switch' />
             <choice id='item'>
-              <RunningApplication />
+              <RunningApplication suppressEmpty={false} />
               <ContentArea />
             </choice>
           </sequence>
           <sequence>
-            <list items={['quit ', 'kill ']} category='action' id='verb' value='quit' />
-            <repeat unique id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />}>
-              <RunningApplication />
+            <literal text='relaunch ' id='verb' value='relaunch' />
+            <repeat unique id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} />}>
+              <RunningApplication suppressEmpty={false} />
             </repeat>
           </sequence>
           <sequence>
-            <list items={['hide ']} category='action' id='verb' value='hide' />
-            <repeat unique id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />}>
-              <RunningApplication />
+            <list items={['quit ', 'kill ']} id='verb' value='quit' />
+            <repeat unique id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} />}>
+              <RunningApplication suppressEmpty={false} />
             </repeat>
           </sequence>
           <sequence>
-            <literal text='close ' category='action' id='verb' value='close' />
-            <repeat unique id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />}>
+            <list items={['hide ']} id='verb' value='hide' />
+            <repeat unique id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} />}>
+              <RunningApplication suppressEmpty={false} />
+            </repeat>
+          </sequence>
+          <sequence>
+            <literal text='close ' id='verb' value='close' />
+            <repeat unique id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} />}>
               <choice>
-                <RunningApplication />
+                <RunningApplication suppressEmpty={false} />
                 <ContentArea />
               </choice>
             </repeat>
@@ -110,9 +127,9 @@ export const Open = {
           <sequence>
             <list items={['eject ', 'unmount ', 'dismount ']} category='action' id='verb' value='eject' />
             <choice merge>
-              <list items={['all', 'everything', 'all devices']} limit={1} category='action' id='verb' value='eject-all' />
+              <list items={['all', 'everything', 'all devices', 'all drives', 'all volumes']} limit={1} category='action' id='verb' value='eject-all' />
               <repeat id='items' separator={<list items={[', ', ', and ', ' and ']} limit={1} />}>
-                <MountedVolume />
+                <MountedVolume suppressEmpty={false} />
               </repeat>
             </choice>
           </sequence>
@@ -129,7 +146,7 @@ function filterOutput (option) {
   }
 
   if (result.verb === 'eject' &&
-      _.some(result.items, item => !item.eject)) {
+      _.some(result.items, item => item && !item.eject)) {
     return false
   }
 
@@ -139,12 +156,22 @@ function filterOutput (option) {
   }
 
   if (result.verb === 'hide' &&
-      _.some(result.items, item => !item.hide)) {
+      _.some(result.items, item => item && !item.hide)) {
+    return false
+  }
+
+  if (result.verb === 'quit' &&
+      _.some(result.items, item => item && !item.quit)) {
+    return false
+  }
+
+  if (result.verb === 'relaunch' &&
+      _.some(result.items, item => item && (!item.quit || !item.launch))) {
     return false
   }
 
   if (result.verb === 'close' &&
-      _.some(result.items, item => !item.close)) {
+      _.some(result.items, item => item && !item.close)) {
     return false
   }
 
