@@ -81,6 +81,11 @@ export default function demoExecute (result) {
       {text: 'quit ', category: 'action'},
       outputify(result.items)
     ])
+  } else if (result.verb === 'relaunch') {
+    return _.flatten([
+      {text: 'quit and relaunch ', category: 'action'},
+      outputify(result.items)
+    ])
   } else if (result.verb === 'kill') {
     return _.flatten([
       {text: 'kill all ', category: 'action'},
