@@ -32,13 +32,16 @@ export const Open = {
         }
       })
     } else if (['reveal', 'delete'].indexOf(result.verb) >= 0) {
+			var callback = function() {
+				if (result.verb === 'reveal') {
+					runApplescript({script: 'tell app "Finder" to activate'}, function(){})
+				}
+			}
+
       var script; 
       result.items.forEach(item => {
         script = 'tell app "Finder" to ' + result.verb + ' (POSIX file "' + item.path + '")'
-        runApplescript({script: script}, function(){})
-        if (result.verb === 'reveal') {
-          runApplescript({script: 'tell app "Finder" to activate'}, function(){})
-        }
+        runApplescript({script: script}, callback)
       })
     } else if (result.verb === 'switch') {
       if (result.item.activate) result.item.activate()
