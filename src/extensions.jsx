@@ -2,7 +2,7 @@
 
 import { createElement } from 'elliptical'
 import { Application, PreferencePane, RunningApplication, ContentArea, MountedVolume, File, Directory, ContactCard, URL, Command } from 'lacona-phrases'
-import { openURL, openFile, unmountAllVolumes } from 'lacona-api'
+import { openURL, openFile, unmountAllVolumes, runApplescript } from 'lacona-api'
 
 import _ from 'lodash'
 import demoExecute from './demo'
@@ -33,14 +33,8 @@ export const Open = {
       })
     } else if (['reveal', 'delete'].indexOf(result.verb) >= 0) {
       var script; 
-      var path;
       result.items.forEach(item => {
-        if (item.path) {
-          path = item.path
-        } else {
-          path = item
-        }
-        script = 'tell app "Finder" to ' + result.verb + ' (POSIX file "' + item + '")'
+        script = 'tell app "Finder" to ' + result.verb + ' (POSIX file "' + item.path + '")'
         runApplescript({script: script}, function(){})
         if (result.verb === 'reveal') {
           runApplescript({script: 'tell app "Finder" to activate'}, function(){})
@@ -110,7 +104,7 @@ export const Open = {
 							{text: 'reveal ', value: 'reveal'},
 							{text: 'delete ', value: 'delete'}
 						]} />
-						 <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} ellipsis>
+						<repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} ellipsis>
               <choice>
                 <Directory id='path' />
                 <File id='path' />
