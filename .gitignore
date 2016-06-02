@@ -29,3 +29,6 @@ node_modules
 
 lib
 build
+
+# Swap files (opening vim does not create untracked files)
+*.swp
