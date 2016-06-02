@@ -99,18 +99,18 @@ export const Open = {
               <Application suppressEmpty={false} />
             </repeat>
           </sequence>
-					<sequence>
-						<list category='conjunction' id='verb' items={[
-							{text: 'reveal ', value: 'reveal'},
-							{text: 'delete ', value: 'delete'}
-						]} />
-						<repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} ellipsis>
+          <sequence>
+            <list category='conjunction' id='verb' items={[
+              {text: 'reveal ', value: 'reveal'},
+              {text: 'delete ', value: 'delete'}
+            ]} />
+            <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} ellipsis>
               <choice>
                 <Directory id='path' />
                 <File id='path' />
               </choice>
             </repeat>
-					</sequence>
+          </sequence>
           <sequence>
             <list items={['switch to ', 'activate ']} id='verb' value='switch' />
             <choice id='item'>
