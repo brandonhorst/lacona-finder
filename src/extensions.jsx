@@ -110,6 +110,12 @@ export const Open = {
 							{text: 'reveal ', value: 'reveal'},
 							{text: 'delete ', value: 'delete'}
 						]} />
+						 <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} ellipsis>
+              <choice>
+                <Directory id='path' />
+                <File id='path' />
+              </choice>
+            </repeat>
 					</sequence>
           <sequence>
             <list items={['switch to ', 'activate ']} id='verb' value='switch' />
