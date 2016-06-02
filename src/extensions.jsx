@@ -11,7 +11,7 @@ export const Open = {
   extends: [Command],
 
   execute (result) {
-		console.log(result.verb)
+    console.log(result.verb)
     if (result.verb === 'open') {
       result.items.forEach(item => {
         if (result.apps) {
@@ -32,22 +32,22 @@ export const Open = {
           }
         }
       })
-		} else if (['reveal', 'delete'].indexOf(result.verb) >= 0) {
-			var script; 
-			var path;
-			result.items.forEach(item => {
-				if (item.path) {
-					path = item.path
-				} else {
-					path = item
-				}
-				script = 'tell app "Finder" to ' + result.verb + ' (POSIX file "' + item + '")'
-				runApplescript({script: script}, function(){})
-				if (result.verb === 'reveal') {
-					runApplescript({script: 'tell app "Finder" to activate'}, function(){})
-				}
-			})
-		} else if (result.verb === 'switch') {
+    } else if (['reveal', 'delete'].indexOf(result.verb) >= 0) {
+      var script; 
+      var path;
+      result.items.forEach(item => {
+        if (item.path) {
+          path = item.path
+        } else {
+          path = item
+        }
+        script = 'tell app "Finder" to ' + result.verb + ' (POSIX file "' + item + '")'
+        runApplescript({script: script}, function(){})
+        if (result.verb === 'reveal') {
+          runApplescript({script: 'tell app "Finder" to activate'}, function(){})
+        }
+      })
+    } else if (result.verb === 'switch') {
       if (result.item.activate) result.item.activate()
     } else if (result.verb === 'quit') {
       _.forEach(result.items, item => {
@@ -77,34 +77,34 @@ export const Open = {
     return (
       <choice>
         <filter outbound={filterOption}>
-					<choice>
-						<sequence>
-							<literal text='open ' category='action' id='verb' value='open' />
-							<repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} ellipsis>
-								<choice>
-									<Application />
-									<PreferencePane />
-									<MountedVolume />
-									<URL splitOn={/\s|,/} id='url' />
-									<File id='path' />
-									<ContactCard />
-								</choice>
-							</repeat>
-							<list items={[' in ', ' using ', ' with ']} limit={1} category='conjunction' id='openin' value />
-							<repeat unique id='apps' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />}>
-								<Application />
-							</repeat>
-						</sequence>
-						<sequence>
-							<list category='action' id='verb' items={[
-								{text: 'reveal ', value: 'reveal'},
-								{text: 'delete ', value: 'delete'}
-							]} />
-							<repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} ellipsis>
-								<File id='path' />
-							</repeat>
-						</sequence>
-					</choice>
+          <choice>
+            <sequence>
+              <literal text='open ' category='action' id='verb' value='open' />
+              <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} ellipsis>
+                <choice>
+                  <Application />
+                  <PreferencePane />
+                  <MountedVolume />
+                  <URL splitOn={/\s|,/} id='url' />
+                  <File id='path' />
+                  <ContactCard />
+                </choice>
+              </repeat>
+              <list items={[' in ', ' using ', ' with ']} limit={1} category='conjunction' id='openin' value />
+              <repeat unique id='apps' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />}>
+                <Application />
+              </repeat>
+            </sequence>
+            <sequence>
+              <list category='action' id='verb' items={[
+                {text: 'reveal ', value: 'reveal'},
+                {text: 'delete ', value: 'delete'}
+              ]} />
+              <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} ellipsis>
+                <File id='path' />
+              </repeat>
+            </sequence>
+          </choice>
         </filter>
         <sequence>
           <literal text='switch to ' category='action' id='verb' value='switch' />
