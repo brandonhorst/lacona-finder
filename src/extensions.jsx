@@ -103,7 +103,7 @@ export const Open = {
             </repeat>
           </sequence>
           <sequence>
-            <list category='conjunction' id='verb' items={[
+            <list category='action' id='verb' items={[
               {text: 'reveal ', value: 'reveal'},
               {text: 'delete ', value: 'delete'}
             ]} />
