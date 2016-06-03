@@ -32,11 +32,11 @@ export const Open = {
         }
       })
     } else if (['reveal', 'delete'].indexOf(result.verb) >= 0) {
-			var callback = function() {
-				if (result.verb === 'reveal') {
-					runApplescript({script: 'tell app "Finder" to activate'}, function(){})
-				}
-			}
+      var callback = function() {
+        if (result.verb === 'reveal') {
+          runApplescript({script: 'tell app "Finder" to activate'}, function(){})
+        }
+      }
 
       var script; 
       result.items.forEach(item => {
