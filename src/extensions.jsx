@@ -103,17 +103,17 @@ export const Open = {
             </repeat>
           </sequence>
           <sequence>
-						<literal text='reveal ' id='verb' category='action' value='reveal' />
+            <literal text='reveal ' id='verb' category='action' value='reveal' />
             <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} >
               <choice>
                 <Directory id='path' />
                 <File id='path' />
               </choice>
             </repeat>
-						<literal text=' in Finder' />
+            <literal text=' in Finder' />
           </sequence>
           <sequence>
-						<literal text='delete ' id='verb' category='action' value='delete' />
+            <literal text='delete ' id='verb' category='action' value='delete' />
             <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} ellipsis>
               <choice>
                 <Directory id='path' />
@@ -122,14 +122,14 @@ export const Open = {
             </repeat>
           </sequence>
           <sequence>
-						<literal text='move ' id='verb' category='action' value='delete' />
+            <literal text='move ' id='verb' category='action' value='delete' />
             <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} >
               <choice>
                 <Directory id='path' />
                 <File id='path' />
               </choice>
             </repeat>
-						<literal text=' to Trash' />
+            <literal text=' to Trash' />
           </sequence>
           <sequence>
             <list items={['switch to ', 'activate ']} id='verb' value='switch' />
