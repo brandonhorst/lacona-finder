@@ -44,18 +44,18 @@ export const Open = {
         runApplescript({script: script}, callback)
       })
     } else if (result.verb === 'move') {
-			var script;
-			result.items.forEach(item => {
-				console.log(item.source)
-				script = ('mv "' + item.source + '" "' + result.dest + '" \n' + 
-					'if [[ "$?" -ne 0 ]]; then \n' +
-					'osascript -e "display notification \\\"$(basename "' + item.source + '") already exists\\\" with title \\\"Move failed\\\"" \n' +
-					'fi'
-					)
-				console.log(script)
-				callSystem({command: '/bin/bash', args: ['-c', script]}, function(){})
-			})
-		} else if (result.verb === 'switch') {
+      var script;
+      result.items.forEach(item => {
+        console.log(item.source)
+        script = ('mv "' + item.source + '" "' + result.dest + '" \n' + 
+          'if [[ "$?" -ne 0 ]]; then \n' +
+          'osascript -e "display notification \\\"$(basename "' + item.source + '") already exists\\\" with title \\\"Move failed\\\"" \n' +
+          'fi'
+          )
+        console.log(script)
+        callSystem({command: '/bin/bash', args: ['-c', script]}, function(){})
+      })
+    } else if (result.verb === 'switch') {
       if (result.item.activate) result.item.activate()
     } else if (result.verb === 'relaunch') {
       _.forEach(result.items, item => {
@@ -152,7 +152,7 @@ export const Open = {
               </choice>
             </repeat>
             <literal text=' to ' />
-						<Directory id='dest' />
+            <Directory id='dest' />
           </sequence>
           <sequence>
             <list items={['switch to ', 'activate ']} id='verb' value='switch' />
