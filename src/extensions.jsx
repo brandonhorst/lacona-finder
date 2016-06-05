@@ -2,7 +2,7 @@
 
 import { createElement } from 'elliptical'
 import { Application, PreferencePane, RunningApplication, ContentArea, MountedVolume, File, Directory, ContactCard, URL, Command } from 'lacona-phrases'
-import { openURL, openFile, unmountAllVolumes, runApplescript } from 'lacona-api'
+import { openURL, openFile, unmountAllVolumes, runApplescript, callSystem } from 'lacona-api'
 
 import _ from 'lodash'
 import demoExecute from './demo'
@@ -43,7 +43,19 @@ export const Open = {
         script = 'tell app "Finder" to ' + result.verb + ' (POSIX file "' + item.path + '")'
         runApplescript({script: script}, callback)
       })
-    } else if (result.verb === 'switch') {
+    } else if (result.verb === 'move') {
+			var script;
+			result.items.forEach(item => {
+				console.log(item.source)
+				script = ('mv "' + item.source + '" "' + result.dest + '" \n' + 
+					'if [[ "$?" -ne 0 ]]; then \n' +
+					'osascript -e "display notification \\\"$(basename "' + item.source + '") already exists\\\" with title \\\"Move failed\\\"" \n' +
+					'fi'
+					)
+				console.log(script)
+				callSystem({command: '/bin/bash', args: ['-c', script]}, function(){})
+			})
+		} else if (result.verb === 'switch') {
       if (result.item.activate) result.item.activate()
     } else if (result.verb === 'relaunch') {
       _.forEach(result.items, item => {
@@ -130,6 +142,17 @@ export const Open = {
               </choice>
             </repeat>
             <literal text=' to Trash' />
+          </sequence>
+          <sequence>
+            <literal text='move ' id='verb' category='action' value='move' />
+            <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} >
+              <choice>
+                <Directory id='source' />
+                <File id='source' />
+              </choice>
+            </repeat>
+            <literal text=' to ' />
+						<Directory id='dest' />
           </sequence>
           <sequence>
             <list items={['switch to ', 'activate ']} id='verb' value='switch' />
