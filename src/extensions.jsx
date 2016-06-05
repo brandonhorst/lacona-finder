@@ -133,7 +133,7 @@ export const Open = {
               </choice>
             </repeat>
           </sequence>
-          <sequence>
+          <sequence >
             <literal text='move ' id='verb' category='action' value='delete' />
             <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} >
               <choice>
@@ -143,7 +143,7 @@ export const Open = {
             </repeat>
             <literal text=' to Trash' />
           </sequence>
-          <sequence>
+          <sequence score={2}>
             <literal text='move ' id='verb' category='action' value='move' />
             <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} >
               <choice>
@@ -239,7 +239,7 @@ function filterOutput (option) {
     return false
   }
 
-  if (['open', 'reveal', 'delete'].indexOf(option.result.verb) >= 0) {
+  if (['open', 'reveal', 'delete', 'move'].indexOf(option.result.verb) >= 0) {
     const counts = _.chain(result.items)
       .filter('limitId')
       .countBy('limitId')
