@@ -2,7 +2,7 @@
 
 import { createElement } from 'elliptical'
 import { Application, PreferencePane, RunningApplication, ContentArea, MountedVolume, File, Directory, ContactCard, URL, Command } from 'lacona-phrases'
-import { openURL, openFile, unmountAllVolumes, runApplescript, callSystem } from 'lacona-api'
+import { openURL, openFile, unmountAllVolumes, runApplescript } from 'lacona-api'
 
 import _ from 'lodash'
 import demoExecute from './demo'
@@ -46,14 +46,27 @@ export const Open = {
     } else if (result.verb === 'move') {
       var script;
       result.items.forEach(item => {
-        console.log(item.source)
-        script = ('mv "' + item.source + '" "' + result.dest + '" \n' + 
-          'if [[ "$?" -ne 0 ]]; then \n' +
-          'osascript -e "display notification \\\"$(basename "' + item.source + '") already exists\\\" with title \\\"Move failed\\\"" \n' +
-          'fi'
+        script = (
+          'on formatPath(thePath) \n' +
+            'set homedir to (do shell script "cd ~ && pwd") \n' +
+            'if thePath starts with "~" then \n' +
+              'set thePath to homedir & (text 2 through -1 of thePath) as string \n' +
+            'end if \n' +
+            'return thePath \n' +
+          'end formatPath \n' +
+
+          'tell app "Finder" \n' +
+            'set srcName to name of item (my formatPath("' + item.source + '") as POSIX file) \n' +
+            'set dstName to name of item (my formatPath("' + result.dest + '") as POSIX file) \n' +
+            'try \n' +
+              'move item (my formatPath("' + item.source + '") as POSIX file) to item (my formatPath("' + result.dest + '") as POSIX file) \n' +
+            'on error errStr number errorNumber \n' +
+              'display notification (srcName & " already exists in " & dstName) with title "Move failed" \n' +
+            'end try \n' +
+          'end tell'
           )
         console.log(script)
-        callSystem({command: '/bin/bash', args: ['-c', script]}, function(){})
+        runApplescript({script: script}, function(){})
       })
     } else if (result.verb === 'switch') {
       if (result.item.activate) result.item.activate()
@@ -133,7 +146,7 @@ export const Open = {
               </choice>
             </repeat>
           </sequence>
-          <sequence >
+          <sequence>
             <literal text='move ' id='verb' category='action' value='delete' />
             <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} >
               <choice>
