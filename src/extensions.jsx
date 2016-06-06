@@ -56,8 +56,8 @@ export const Open = {
           'end formatPath \n' +
 
           'tell app "Finder" \n' +
-						'set src to item (my formatPath("' + item.source + '") as POSIX file) \n' +
-						'set dst to item (my formatPath("' + result.dest + '") as POSIX file) \n' +
+            'set src to item (my formatPath("' + item.source + '") as POSIX file) \n' +
+            'set dst to item (my formatPath("' + result.dest + '") as POSIX file) \n' +
             'set srcName to name of src \n' +
             'set dstName to name of dst \n' +
             'try \n' +
