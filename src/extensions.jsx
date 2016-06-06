@@ -43,7 +43,7 @@ export const Open = {
         script = 'tell app "Finder" to ' + result.verb + ' (POSIX file "' + item.path + '")'
         runApplescript({script: script}, callback)
       })
-    } else if (result.verb === 'move') {
+    } else if (['move', 'duplicate'].indexOf(result.verb) >= 0) {
       var script;
       result.items.forEach(item => {
         script = (
@@ -61,7 +61,7 @@ export const Open = {
             'set srcName to name of src \n' +
             'set dstName to name of dst \n' +
             'try \n' +
-              'move src to dst \n' +
+              result.verb + ' src to dst \n' +
             'on error errStr number errorNumber \n' +
               'display notification (srcName & " already exists in " & dstName) with title "Move failed" \n' +
             'end try \n' +
@@ -159,7 +159,10 @@ export const Open = {
             <literal text=' to Trash' />
           </sequence>
           <sequence score={2}>
-            <literal text='move ' id='verb' category='action' value='move' />
+						<list category='action' id='verb' items={[
+							{text: 'move ', value: 'move'},
+							{text: 'copy ', value: 'duplicate'}
+						]} />
             <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} >
               <choice>
                 <Directory id='source' />
