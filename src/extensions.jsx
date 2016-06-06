@@ -56,10 +56,12 @@ export const Open = {
           'end formatPath \n' +
 
           'tell app "Finder" \n' +
-            'set srcName to name of item (my formatPath("' + item.source + '") as POSIX file) \n' +
-            'set dstName to name of item (my formatPath("' + result.dest + '") as POSIX file) \n' +
+						'set src to item (my formatPath("' + item.source + '") as POSIX file) \n' +
+						'set dst to item (my formatPath("' + result.dest + '") as POSIX file) \n' +
+            'set srcName to name of src \n' +
+            'set dstName to name of dst \n' +
             'try \n' +
-              'move item (my formatPath("' + item.source + '") as POSIX file) to item (my formatPath("' + result.dest + '") as POSIX file) \n' +
+              'move src to dst \n' +
             'on error errStr number errorNumber \n' +
               'display notification (srcName & " already exists in " & dstName) with title "Move failed" \n' +
             'end try \n' +
