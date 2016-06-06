@@ -159,10 +159,10 @@ export const Open = {
             <literal text=' to Trash' />
           </sequence>
           <sequence score={2}>
-						<list category='action' id='verb' items={[
-							{text: 'move ', value: 'move'},
-							{text: 'copy ', value: 'duplicate'}
-						]} />
+            <list category='action' id='verb' items={[
+              {text: 'move ', value: 'move'},
+              {text: 'copy ', value: 'duplicate'}
+            ]} />
             <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} >
               <choice>
                 <Directory id='source' />
