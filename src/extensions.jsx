@@ -11,6 +11,16 @@ export const Open = {
   extends: [Command],
 
   execute (result) {
+		var appleScriptTildeToHomeDir = (
+          'on formatPath(thePath) \n' +
+            'set homedir to (do shell script "cd ~ && pwd") \n' +
+            'if thePath starts with "~" then \n' +
+              'set thePath to homedir & (text 2 through -1 of thePath) as string \n' +
+            'end if \n' +
+            'return thePath \n' +
+          'end formatPath \n'
+				)
+
     if (result.verb === 'open') {
       result.items.forEach(item => {
         if (result.apps) {
@@ -40,21 +50,13 @@ export const Open = {
 
       var script; 
       result.items.forEach(item => {
-        script = 'tell app "Finder" to ' + result.verb + ' (POSIX file "' + item.path + '")'
+        script = appleScriptTildeToHomeDir + 'tell app "Finder" to ' + result.verb + ' (my formatPath("' + item.path + '") as POSIX file)'
         runApplescript({script: script}, callback)
       })
     } else if (['move', 'duplicate'].indexOf(result.verb) >= 0) {
       var script;
       result.items.forEach(item => {
-        script = (
-          'on formatPath(thePath) \n' +
-            'set homedir to (do shell script "cd ~ && pwd") \n' +
-            'if thePath starts with "~" then \n' +
-              'set thePath to homedir & (text 2 through -1 of thePath) as string \n' +
-            'end if \n' +
-            'return thePath \n' +
-          'end formatPath \n' +
-
+        script = (appleScriptTildeToHomeDir +
           'tell app "Finder" \n' +
             'set src to item (my formatPath("' + item.source + '") as POSIX file) \n' +
             'set dst to item (my formatPath("' + result.dest + '") as POSIX file) \n' +
