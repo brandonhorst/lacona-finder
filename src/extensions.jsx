@@ -11,7 +11,7 @@ export const Open = {
   extends: [Command],
 
   execute (result) {
-		var appleScriptTildeToHomeDir = (
+    var appleScriptTildeToHomeDir = (
           'on formatPath(thePath) \n' +
             'set homedir to (do shell script "cd ~ && pwd") \n' +
             'if thePath starts with "~" then \n' +
@@ -19,7 +19,7 @@ export const Open = {
             'end if \n' +
             'return thePath \n' +
           'end formatPath \n'
-				)
+        )
 
     if (result.verb === 'open') {
       result.items.forEach(item => {
