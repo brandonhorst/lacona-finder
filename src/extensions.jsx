@@ -13,7 +13,7 @@ export const Open = {
   execute (result) {
     var appleScriptTildeToHomeDir = (
       'on formatPath(thePath) \n' +
-        'set homedir to (do shell script "cd ~ && pwd") \n' +
+        'set homedir to (POSIX path of (path to home folder)) \n' +
         'if thePath starts with "~" then \n' +
           'set thePath to homedir & (text 2 through -1 of thePath) as string \n' +
         'end if \n' +
