@@ -2,7 +2,7 @@
 
 import { createElement } from 'elliptical'
 import { Application, PreferencePane, RunningApplication, ContentArea, MountedVolume, File, Directory, ContactCard, URL, Command } from 'lacona-phrases'
-import { openURL, openFile, unmountAllVolumes } from 'lacona-api'
+import { openURL, openFile, unmountAllVolumes, runApplescript } from 'lacona-api'
 
 import _ from 'lodash'
 import demoExecute from './demo'
@@ -30,6 +30,45 @@ export const Open = {
             openFile({path: item.path})
           }
         }
+      })
+    } else if (['reveal', 'delete'].indexOf(result.verb) >= 0) {
+      var callback = function() {
+        if (result.verb === 'reveal') {
+          runApplescript({script: 'tell app "Finder" to activate'}, function(){})
+        }
+      }
+
+      var script; 
+      result.items.forEach(item => {
+        script = 'tell app "Finder" to ' + result.verb + ' (POSIX file "' + item.path + '")'
+        runApplescript({script: script}, callback)
+      })
+    } else if (['move', 'duplicate'].indexOf(result.verb) >= 0) {
+      var script;
+      result.items.forEach(item => {
+        script = (
+          'on formatPath(thePath) \n' +
+            'set homedir to (do shell script "cd ~ && pwd") \n' +
+            'if thePath starts with "~" then \n' +
+              'set thePath to homedir & (text 2 through -1 of thePath) as string \n' +
+            'end if \n' +
+            'return thePath \n' +
+          'end formatPath \n' +
+
+          'tell app "Finder" \n' +
+            'set src to item (my formatPath("' + item.source + '") as POSIX file) \n' +
+            'set dst to item (my formatPath("' + result.dest + '") as POSIX file) \n' +
+            'set srcName to name of src \n' +
+            'set dstName to name of dst \n' +
+            'try \n' +
+              result.verb + ' src to dst \n' +
+            'on error errStr number errorNumber \n' +
+              'display notification (srcName & " already exists in " & dstName) with title "Move failed" \n' +
+            'end try \n' +
+          'end tell'
+          )
+        console.log(script)
+        runApplescript({script: script}, function(){})
       })
     } else if (result.verb === 'switch') {
       if (result.item.activate) result.item.activate()
@@ -89,6 +128,49 @@ export const Open = {
             <repeat unique id='apps' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />}>
               <Application suppressEmpty={false} />
             </repeat>
+          </sequence>
+          <sequence>
+            <literal text='reveal ' id='verb' category='action' value='reveal' />
+            <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} >
+              <choice>
+                <Directory id='path' />
+                <File id='path' />
+              </choice>
+            </repeat>
+            <literal text=' in Finder' />
+          </sequence>
+          <sequence>
+            <literal text='delete ' id='verb' category='action' value='delete' />
+            <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} ellipsis>
+              <choice>
+                <Directory id='path' />
+                <File id='path' />
+              </choice>
+            </repeat>
+          </sequence>
+          <sequence>
+            <literal text='move ' id='verb' category='action' value='delete' />
+            <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} >
+              <choice>
+                <Directory id='path' />
+                <File id='path' />
+              </choice>
+            </repeat>
+            <literal text=' to Trash' />
+          </sequence>
+          <sequence score={2}>
+            <list category='action' id='verb' items={[
+              {text: 'move ', value: 'move'},
+              {text: 'copy ', value: 'duplicate'}
+            ]} />
+            <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} >
+              <choice>
+                <Directory id='source' />
+                <File id='source' />
+              </choice>
+            </repeat>
+            <literal text=' to ' />
+            <Directory id='dest' />
           </sequence>
           <sequence>
             <list items={['switch to ', 'activate ']} id='verb' value='switch' />
@@ -175,7 +257,7 @@ function filterOutput (option) {
     return false
   }
 
-  if (result.verb === 'open') {
+  if (['open', 'reveal', 'delete', 'move'].indexOf(option.result.verb) >= 0) {
     const counts = _.chain(result.items)
       .filter('limitId')
       .countBy('limitId')
