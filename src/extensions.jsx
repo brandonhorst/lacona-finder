@@ -12,14 +12,14 @@ export const Open = {
 
   execute (result) {
     var appleScriptTildeToHomeDir = (
-          'on formatPath(thePath) \n' +
-            'set homedir to (do shell script "cd ~ && pwd") \n' +
-            'if thePath starts with "~" then \n' +
-              'set thePath to homedir & (text 2 through -1 of thePath) as string \n' +
-            'end if \n' +
-            'return thePath \n' +
-          'end formatPath \n'
-        )
+      'on formatPath(thePath) \n' +
+        'set homedir to (do shell script "cd ~ && pwd") \n' +
+        'if thePath starts with "~" then \n' +
+          'set thePath to homedir & (text 2 through -1 of thePath) as string \n' +
+        'end if \n' +
+        'return thePath \n' +
+      'end formatPath \n'
+      )
 
     if (result.verb === 'open') {
       result.items.forEach(item => {
