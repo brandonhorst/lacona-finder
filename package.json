@@ -2,14 +2,10 @@
   "name": "lacona-finder",
   "version": "0.5.1",
   "description": "Lacona commands for opening apps, files, pref panes, and urls",
-  "lacona": {
-    "extensions": "build/extensions.js"
-  },
   "scripts": {
-    "build:build": "mkdir -p build; browserify src/extensions.jsx -t babelify -o build/extensions.js -x lacona-phrases -x elliptical -x lacona-api --standalone extensions --extension=jsx",
-    "build:lib": "babel src --out-dir lib",
-    "clean": "rimraf build lib",
-    "prepublish": "npm run clean && npm run build:build && npm run build:lib"
+    "build": "babel src --out-dir lib",
+    "clean": "rimraf lib",
+    "prepublish": "npm run clean && npm run build"
   },
   "repository": {
     "type": "git",
@@ -32,11 +28,12 @@
     "babel-cli": "^6.9.0",
     "babel-plugin-transform-react-jsx": "^6.8.0",
     "babel-preset-es2015": "^6.9.0",
-    "babelify": "^7.3.0",
-    "browserify": "^13.0.1",
     "rimraf": "^2.5.2"
   },
   "dependencies": {
+    "elliptical": "^1.0.0-rc14",
+    "lacona-api": "^0.5.1",
+    "lacona-phrases": "^0.7.0",
     "lodash": "^4.13.1"
   },
   "babel": {

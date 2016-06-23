@@ -119,8 +119,8 @@ export const Open = {
                 <PreferencePane />
                 <MountedVolume />
                 <URL splitOn={/\s|,/} id='url' />
-                <Directory id='path' />
-                <File id='path' />
+                <Directory id='path' splitOn={/\s|,/} />
+                <File id='path' splitOn={/\s|,/} />
                 <ContactCard />
               </choice>
             </repeat>
@@ -137,10 +137,13 @@ export const Open = {
                 <File id='path' />
               </choice>
             </repeat>
-            <literal text=' in Finder' />
+            <literal text=' in ' />
+            <label text='Application' suppress={false}>
+              <literal text='Finder' />
+            </label>
           </sequence>
           <sequence>
-            <literal text='delete ' id='verb' category='action' value='delete' />
+            <list items={['delete ', 'trash ']} value='delete' />
             <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} ellipsis>
               <choice>
                 <Directory id='path' />
