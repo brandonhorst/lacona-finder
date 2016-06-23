@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "elliptical": "^1.0.0-rc14",
-    "lacona-api": "^0.5.1",
+    "lacona-api": "^0.6.1",
     "lacona-phrases": "^0.7.0",
     "lodash": "^4.13.1"
   },
