@@ -138,9 +138,7 @@ export const Open = {
               </choice>
             </repeat>
             <literal text=' in ' />
-            <label text='Application' suppress={false}>
-              <literal text='Finder' />
-            </label>
+            <literal text='Finder' argument='application' />
           </sequence>
           <sequence>
             <list items={['delete ', 'trash ']} value='delete' />
