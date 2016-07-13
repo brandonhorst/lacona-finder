@@ -2,10 +2,19 @@
 
 import { createElement } from 'elliptical'
 import { Application, PreferencePane, RunningApplication, ContentArea, MountedVolume, File, Directory, ContactCard, URL, Command } from 'lacona-phrases'
-import { openURL, openFile, unmountAllVolumes, runApplescript } from 'lacona-api'
+import { openURL, openFile, unmountAllVolumes, fetchDictionaryDefinitions, runApplescript } from 'lacona-api'
+import { fromPromise } from 'rxjs/observable/fromPromise'
+import { startWith } from 'rxjs/operator/startWith'
 
 import _ from 'lodash'
 import demoExecute from './demo'
+
+const DefinitionSource = {
+  fetch ({props}) {
+    return fromPromise(fetchDictionaryDefinitions({word: props.word}))::startWith([])
+  },
+  clear: true
+}
 
 export const Open = {
   extends: [Command],
@@ -40,7 +49,7 @@ export const Open = {
 
       var script; 
       result.items.forEach(item => {
-        script = 'tell app "Finder" to ' + result.verb + ' (POSIX file "' + item.path + '")'
+        script = 'tell app "Finder" to ' + result.verb + ' (POSIX file "' + item + '")'
         runApplescript({script: script}, callback)
       })
     } else if (['move', 'duplicate'].indexOf(result.verb) >= 0) {
@@ -56,7 +65,7 @@ export const Open = {
           'end formatPath \n' +
 
           'tell app "Finder" \n' +
-            'set src to item (my formatPath("' + item.source + '") as POSIX file) \n' +
+            'set src to item (my formatPath("' + item + '") as POSIX file) \n' +
             'set dst to item (my formatPath("' + result.dest + '") as POSIX file) \n' +
             'set srcName to name of src \n' +
             'set dstName to name of dst \n' +
@@ -67,44 +76,52 @@ export const Open = {
             'end try \n' +
           'end tell'
           )
-        console.log(script)
         runApplescript({script: script}, function(){})
       })
     } else if (result.verb === 'switch') {
-      if (result.item.activate) result.item.activate()
+      result.item.activate()
     } else if (result.verb === 'relaunch') {
       _.forEach(result.items, item => {
-        if (item.quit) item.quit((err) => {
-          if (err) {
-            console.log('Error quitting')
-            console.error(err)
-          } else {
-            item.launch()
-          }
+        item.quit().then(() => {
+          item.launch()
+        }).catch(err => {
+          console.log('Error quitting running app', err)
         })
       })
     } else if (result.verb === 'quit') {
       _.forEach(result.items, item => {
-        if (item.quit) item.quit()
+        item.quit()
       })
     } else if (result.verb === 'close') {
       _.forEach(result.items, item => {
-        if (item.close) item.close()
+        item.close()
       })
     } else if (result.verb === 'hide') {
       _.forEach(result.items, item => {
-        if (item.hide) item.hide()
+        item.hide()
       })
     } else if (result.verb === 'eject') {
       _.forEach(result.items, item => {
-        if (item.eject) item.eject()
+        item.eject()
       })
     } else if (result.verb === 'eject-all') {
       unmountAllVolumes()
+    } else if (result.verb === 'define') {
+      openURL({url: `dict://${result.item}`})
     }
   },
 
   demoExecute,
+
+  preview (result, {observe}) {
+    if (result.verb === 'define') {
+      const data = observe(<DefinitionSource word={result.item} />)
+      if (data.length) {
+        const allHTML = _.map(data, 'html').join('<hr />')
+        return {type: 'html', value: allHTML}
+      }
+    }
+  },
 
   // TODO add canOpen, canEject, ... support
   describe () {
@@ -133,45 +150,42 @@ export const Open = {
             <literal text='reveal ' id='verb' category='action' value='reveal' />
             <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} >
               <choice>
-                <Directory id='path' />
-                <File id='path' />
+                <Directory splitOn={/\s|,/} />
+                <File splitOn={/\s|,/} />
               </choice>
             </repeat>
             <literal text=' in ' />
-            <literal text='Finder' argument='application' />
+            <literal text='Finder'
+              argument='application'
+              annotation={{type: 'icon', path: '/System/Library/CoreServices/Finder.app'}} />
           </sequence>
           <sequence>
-            <list items={['delete ', 'trash ']} value='delete' />
+            <list items={['delete ', 'trash ']} id='verb' value='delete' />
             <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} ellipsis>
               <choice>
-                <Directory id='path' />
-                <File id='path' />
+                <Directory splitOn={/\s|,/} />
+                <File splitOn={/\s|,/} />
               </choice>
             </repeat>
           </sequence>
           <sequence>
-            <literal text='move ' id='verb' category='action' value='delete' />
-            <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} >
-              <choice>
-                <Directory id='path' />
-                <File id='path' />
-              </choice>
-            </repeat>
-            <literal text=' to Trash' />
-          </sequence>
-          <sequence score={2}>
             <list category='action' id='verb' items={[
               {text: 'move ', value: 'move'},
               {text: 'copy ', value: 'duplicate'}
             ]} />
             <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} >
               <choice>
-                <Directory id='source' />
-                <File id='source' />
+                <Directory splitOn={/\s|,/} />
+                <File splitOn={/\s|,/} />
               </choice>
             </repeat>
             <literal text=' to ' />
-            <Directory id='dest' />
+            <choice merge>
+              <Directory id='dest' />
+              <placeholder argument='trash' id='verb' value='delete'>
+                <literal text='Trash' />
+              </placeholder>
+            </choice>
           </sequence>
           <sequence>
             <list items={['switch to ', 'activate ']} id='verb' value='switch' />
@@ -208,6 +222,12 @@ export const Open = {
             </repeat>
           </sequence>
           <sequence>
+            <list items={['define ', 'look up ']} id='verb' value='define' />
+            <placeholder argument='word or phrase' id='item'>
+              <freetext consumeAll />
+            </placeholder>
+          </sequence>
+          <sequence>
             <list items={['eject ', 'unmount ', 'dismount ']} category='action' id='verb' value='eject' />
             <choice merge>
               <list items={['all', 'everything', 'all devices', 'all drives', 'all volumes']} limit={1} category='action' id='verb' value='eject-all' />
@@ -232,7 +252,6 @@ function filterOutput (option) {
       _.some(result.items, item => item && !item.eject)) {
     return false
   }
-
 
   if (result.verb === 'switch' && result.item && !result.item.activate) {
     return false
