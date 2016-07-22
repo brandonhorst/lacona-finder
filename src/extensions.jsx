@@ -1,7 +1,7 @@
 /** @jsx createElement */
 
 import { createElement } from 'elliptical'
-import { Application, PreferencePane, RunningApplication, ContentArea, MountedVolume, File, Directory, ContactCard, URL, Command } from 'lacona-phrases'
+import { Application, PreferencePane, RunningApplication, ContentArea, MountedVolume, File, Directory, ContactCard, URL, String, Command } from 'lacona-phrases'
 import { openURL, openFile, unmountAllVolumes, fetchDictionaryDefinitions, runApplescript } from 'lacona-api'
 import { fromPromise } from 'rxjs/observable/fromPromise'
 import { startWith } from 'rxjs/operator/startWith'
@@ -124,7 +124,7 @@ export const Open = {
   },
 
   // TODO add canOpen, canEject, ... support
-  describe () {
+  describe ({observe}) {
     return (
       <filter outbound={filterOutput}>
         <choice>
@@ -223,9 +223,7 @@ export const Open = {
           </sequence>
           <sequence>
             <list items={['define ', 'look up ']} id='verb' value='define' />
-            <placeholder argument='word or phrase' id='item'>
-              <freetext consumeAll />
-            </placeholder>
+            <String label='word or phrase' id='item' consumeAll filter={input => hasDefinition(input, observe)} />
           </sequence>
           <sequence>
             <list items={['eject ', 'unmount ', 'dismount ']} category='action' id='verb' value='eject' />
@@ -240,6 +238,11 @@ export const Open = {
       </filter>
     )
   }
+}
+
+function hasDefinition(input, observe) {
+  const data = observe(<DefinitionSource word={input} />)
+  return !!data.length
 }
 
 function filterOutput (option) {
