@@ -2,7 +2,7 @@
 
 import { createElement } from 'elliptical'
 import { Application, PreferencePane, RunningApplication, ContentArea, MountedVolume, File, Directory, ContactCard, URL, String, Command } from 'lacona-phrases'
-import { openURL, openFile, unmountAllVolumes, fetchDictionaryDefinitions, runApplescript } from 'lacona-api'
+import { openURL, openFile, unmountAllVolumes, fetchDictionaryDefinitions, runApplescript, showNotification } from 'lacona-api'
 import { fromPromise } from 'rxjs/observable/fromPromise'
 import { startWith } from 'rxjs/operator/startWith'
 
@@ -101,11 +101,37 @@ export const Open = {
         item.hide()
       })
     } else if (result.verb === 'eject') {
-      _.forEach(result.items, item => {
-        item.eject()
-      })
+      if (result.items.length === 1) {
+        result.items[0].eject().then(() => {
+          return showNotification({
+            title: `Successfully ejected ${result.items[0].name}`
+          })
+        }).catch(e => {
+          console.error('Error ejecting volume', result.items[0].name, e)
+          return showNotification({
+            title: `Error ejecting ${result.items[0].name}`
+          })
+        })
+      } else {
+        const ejectPromises = _.map(result.items, item => item.eject())
+        Promise.all(ejectPromises).then(() => {
+          return showNotification({
+            title: `Successfully ejected volumes`
+          })
+        }).catch(e => {
+          console.error('Error ejecting volumes', result.items, e)
+          return showNotification({
+            title: `Error ejecting volumes`
+          })
+        })
+      }
     } else if (result.verb === 'eject-all') {
-      unmountAllVolumes()
+      unmountAllVolumes().then(() => {
+        console.log('eject all')
+        showNotification({
+          title: `Successfully ejected all volumes`
+        })
+      })
     } else if (result.verb === 'define') {
       openURL({url: `dict://${result.item}`})
     }
