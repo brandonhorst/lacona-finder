@@ -1,6 +1,6 @@
 {
   "name": "lacona-finder",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Lacona commands for opening apps, files, pref panes, and urls",
   "scripts": {
     "build": "babel src --out-dir lib",
