@@ -149,13 +149,12 @@ export const Open = {
     }
   },
 
-  // TODO add canOpen, canEject, ... support
   describe ({observe}) {
     return (
       <filter outbound={filterOutput}>
         <choice>
           <sequence>
-            <literal text='open ' category='action' id='verb' value='open' />
+            <literal text='open ' category='action' id='verb' value='open' score={2} />
             <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} ellipsis>
               <choice>
                 <Application />
@@ -163,7 +162,10 @@ export const Open = {
                 <MountedVolume />
                 <URL splitOn={/\s|,/} id='url' />
                 <Directory id='path' splitOn={/\s|,/} />
-                <File id='path' splitOn={/\s|,/} />
+                <sequence id='path'>
+                  <literal text='' score={0.5} />
+                  <File merge splitOn={/\s|,/} />
+                </sequence>
                 <ContactCard />
               </choice>
             </repeat>
