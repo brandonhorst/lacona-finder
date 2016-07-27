@@ -85,7 +85,7 @@ export const Open = {
         item.quit().then(() => {
           item.launch()
         }).catch(err => {
-          console.log('Error quitting running app', err)
+          console.error('Error quitting running app', err)
         })
       })
     } else if (result.verb === 'quit') {
@@ -127,7 +127,6 @@ export const Open = {
       }
     } else if (result.verb === 'eject-all') {
       unmountAllVolumes().then(() => {
-        console.log('eject all')
         showNotification({
           title: `Successfully ejected all volumes`
         })
@@ -161,11 +160,8 @@ export const Open = {
                 <PreferencePane />
                 <MountedVolume />
                 <URL splitOn={/\s|,/} id='url' />
-                <Directory id='path' splitOn={/\s|,/} />
-                <sequence id='path'>
-                  <literal text='' score={0.5} />
-                  <File merge splitOn={/\s|,/} />
-                </sequence>
+                <Directory id='path' splitOn={/\s|,/} multiplier={0.5} />
+                <File id='path' splitOn={/\s|,/} multiplier={0.5} />
                 <ContactCard />
               </choice>
             </repeat>
