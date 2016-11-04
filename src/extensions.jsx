@@ -2,24 +2,15 @@
 
 import { createElement } from 'elliptical'
 import { Application, PreferencePane, RunningApplication, ContentArea, MountedVolume, File, Directory, ContactCard, URL, String, Command } from 'lacona-phrases'
-import { openURL, openFile, unmountAllVolumes, fetchDictionaryDefinitions, runApplescript, showNotification } from 'lacona-api'
-import { fromPromise } from 'rxjs/observable/fromPromise'
-import { startWith } from 'rxjs/operator/startWith'
+import { openURL, openFile, unmountAllVolumes, runApplescript, showNotification } from 'lacona-api'
 
 import _ from 'lodash'
 import demoExecute from './demo'
 
-const DefinitionSource = {
-  fetch ({props}) {
-    return fromPromise(fetchDictionaryDefinitions({word: props.word}))::startWith([])
-  },
-  clear: true
-}
-
 export const Open = {
   extends: [Command],
 
-  execute (result) {
+  async execute (result) {
     if (result.verb === 'open') {
       result.items.forEach(item => {
         if (result.apps) {
@@ -41,17 +32,17 @@ export const Open = {
         }
       })
     } else if (['reveal', 'delete'].indexOf(result.verb) >= 0) {
-      var callback = function() {
-        if (result.verb === 'reveal') {
-          runApplescript({script: 'tell app "Finder" to activate'}, function(){})
-        }
-      }
-
-      var script; 
-      result.items.forEach(item => {
-        script = 'tell app "Finder" to ' + result.verb + ' (POSIX file "' + item + '")'
-        runApplescript({script: script}, callback)
+      const scriptPromises = _.map(result.items, item => {
+        const file = item.path || item
+        const script = 'tell app "Finder" to ' + result.verb + ' (POSIX file "' + file + '")'
+        return runApplescript({script: script})
       })
+
+      await Promise.all(scriptPromises)
+
+      if (result.verb === 'reveal') {
+        await runApplescript({script: 'tell app "Finder" to activate'}, function(){})
+      }
     } else if (['move', 'duplicate'].indexOf(result.verb) >= 0) {
       var script;
       result.items.forEach(item => {
@@ -131,51 +122,43 @@ export const Open = {
           title: `Successfully ejected all volumes`
         })
       })
-    } else if (result.verb === 'define') {
-      openURL({url: `dict://${result.item}`})
     }
   },
 
   demoExecute,
 
-  preview (result, {observe}) {
-    if (result.verb === 'define') {
-      const data = observe(<DefinitionSource word={result.item} />)
-      if (data.length) {
-        const allHTML = _.map(data, 'html').join('<hr />')
-        return {type: 'html', value: allHTML}
-      }
-    }
-  },
-
-  describe ({observe}) {
+  describe ({config}) {
     return (
       <filter outbound={filterOutput}>
         <choice>
           <sequence>
-            <literal text='open ' category='action' id='verb' value='open' score={2} />
-            <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} ellipsis>
+            <literal text='open ' id='verb' value='open' score={2} />
+            <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} />} ellipsis unique>
               <choice>
-                <Application />
-                <PreferencePane />
-                <MountedVolume />
-                <URL splitOn={/\s|,/} id='url' />
-                <Directory id='path' splitOn={/\s|,/} multiplier={0.5} />
-                <File id='path' splitOn={/\s|,/} multiplier={0.5} />
-                <ContactCard />
+                {config.enableOpenApplications ? <Application /> : null}
+                {config.enableOpenPreferences ? <PreferencePane /> : null}
+                {config.enableOpenVolumes ? <MountedVolume /> : null}
+                {config.enableOpenURLs ? <URL splitOn={/\s|,/} id='url' /> : null}
+                {config.enableOpenDirectories ? <Directory id='path' splitOn={/\s|,/} multiplier={0.5} /> : null}
+                {config.enableOpenFiles ? <File id='path' splitOn={/\s|,/} multiplier={0.5} /> : null}
+                {config.enableOpenContacts ? <ContactCard /> : null}
               </choice>
             </repeat>
-            <list items={[' in ', ' using ', ' with ']} limit={1} category='conjunction' id='openin' value />
-            <repeat unique id='apps' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />}>
-              <Application suppressEmpty={false} />
-            </repeat>
+            {config.enableOpenApplications ? [
+              <list items={[' in ', ' using ', ' with ']} limit={1} id='openin' value />,
+              <repeat unique id='apps' separator={<list items={[' and ', ', and ', ', ']} limit={1} />}>
+                <Application suppressEmpty={false} />
+              </repeat>
+            ] : null}
           </sequence>
           <sequence>
-            <literal text='reveal ' id='verb' category='action' value='reveal' />
-            <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} >
+            <literal text='reveal ' id='verb' value='reveal' />
+            <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} />} unique>
               <choice>
-                <Directory splitOn={/\s|,/} />
-                <File splitOn={/\s|,/} />
+                {config.enableRevealApplications ? <Application /> : null}
+                {config.enableRevealVolumes ? <MountedVolume /> : null}
+                {config.enableRevealDirectories ? <Directory splitOn={/\s|,/} /> : null}
+                {config.enableRevealFiles ? <File splitOn={/\s|,/} /> : null}
               </choice>
             </repeat>
             <literal text=' in ' />
@@ -183,21 +166,23 @@ export const Open = {
               argument='application'
               annotation={{type: 'icon', path: '/System/Library/CoreServices/Finder.app'}} />
           </sequence>
+          {config.enableDelete ? (
+            <sequence>
+              <list items={['delete ', 'trash ']} id='verb' value='delete' />
+              <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} />} ellipsis unique>
+                <choice>
+                  <Directory splitOn={/\s|,/} />
+                  <File splitOn={/\s|,/} />
+                </choice>
+              </repeat>
+            </sequence>
+          ) : null}
           <sequence>
-            <list items={['delete ', 'trash ']} id='verb' value='delete' />
-            <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} ellipsis>
-              <choice>
-                <Directory splitOn={/\s|,/} />
-                <File splitOn={/\s|,/} />
-              </choice>
-            </repeat>
-          </sequence>
-          <sequence>
-            <list category='action' id='verb' items={[
-              {text: 'move ', value: 'move'},
-              {text: 'copy ', value: 'duplicate'}
+            <list id='verb' items={[
+              config.enableMove ? {text: 'move ', value: 'move'} : null,
+              config.enableCopy ? {text: 'copy ', value: 'duplicate'} : null
             ]} />
-            <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} category='conjunction' />} >
+            <repeat id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} />} unique >
               <choice>
                 <Directory splitOn={/\s|,/} />
                 <File splitOn={/\s|,/} />
@@ -211,62 +196,65 @@ export const Open = {
               </placeholder>
             </choice>
           </sequence>
-          <sequence>
-            <list items={['switch to ', 'activate ']} id='verb' value='switch' />
-            <choice id='item'>
-              <RunningApplication suppressEmpty={false} />
-              <ContentArea />
-            </choice>
-          </sequence>
-          <sequence>
-            <literal text='relaunch ' id='verb' value='relaunch' />
-            <repeat unique id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} />}>
-              <RunningApplication suppressEmpty={false} />
-            </repeat>
-          </sequence>
-          <sequence>
-            <list items={['quit ', 'kill ']} id='verb' value='quit' />
-            <repeat unique id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} />}>
-              <RunningApplication suppressEmpty={false} />
-            </repeat>
-          </sequence>
-          <sequence>
-            <list items={['hide ']} id='verb' value='hide' />
-            <repeat unique id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} />}>
-              <RunningApplication suppressEmpty={false} />
-            </repeat>
-          </sequence>
-          <sequence>
-            <literal text='close ' id='verb' value='close' />
-            <repeat unique id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} />}>
-              <choice>
+          {config.enableActivate ? (
+            <sequence>
+              <list items={['switch to ', 'activate ']} id='verb' value='switch' />
+              <choice id='item'>
                 <RunningApplication suppressEmpty={false} />
                 <ContentArea />
               </choice>
-            </repeat>
-          </sequence>
-          <sequence>
-            <list items={['define ', 'look up ']} id='verb' value='define' />
-            <String label='word or phrase' id='item' consumeAll filter={input => hasDefinition(input, observe)} />
-          </sequence>
-          <sequence>
-            <list items={['eject ', 'unmount ', 'dismount ']} category='action' id='verb' value='eject' />
-            <choice merge>
-              <list items={['all', 'everything', 'all devices', 'all drives', 'all volumes']} limit={1} category='action' id='verb' value='eject-all' />
-              <repeat id='items' separator={<list items={[', ', ', and ', ' and ']} limit={1} />}>
-                <MountedVolume suppressEmpty={false} />
+            </sequence>
+          ) : null}
+          {config.enableRelaunch ? (
+            <sequence>
+              <literal text='relaunch ' id='verb' value='relaunch' />
+              <repeat unique id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} />}>
+                <RunningApplication suppressEmpty={false} />
               </repeat>
-            </choice>
-          </sequence>
+            </sequence>
+          ) : null}
+          {config.enableQuit ? (
+            <sequence>
+              <list items={['quit ', 'kill ']} id='verb' value='quit' />
+              <repeat unique id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} />}>
+                <RunningApplication suppressEmpty={false} />
+              </repeat>
+            </sequence>
+          ) : null}
+          {config.enableHide ? (
+            <sequence>
+              <list items={['hide ']} id='verb' value='hide' />
+              <repeat unique id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} />}>
+                <RunningApplication suppressEmpty={false} />
+              </repeat>
+            </sequence>
+          ) : null}
+          {config.enableClose ? (
+            <sequence>
+              <literal text='close ' id='verb' value='close' />
+              <repeat unique id='items' separator={<list items={[' and ', ', and ', ', ']} limit={1} />}>
+                <choice>
+                  <RunningApplication suppressEmpty={false} />
+                  <ContentArea />
+                </choice>
+              </repeat>
+            </sequence>
+          ) : null}
+          {config.enableEject ? (
+            <sequence>
+              <list items={['eject ', 'unmount ', 'dismount ']} id='verb' value='eject' />
+              <choice merge>
+                <list items={['all', 'everything', 'all devices', 'all drives', 'all volumes']} limit={1} id='verb' value='eject-all' />
+                <repeat id='items' separator={<list items={[', ', ', and ', ' and ']} limit={1} />} unique>
+                  <MountedVolume suppressEmpty={false} />
+                </repeat>
+              </choice>
+            </sequence>
+          ) : null}
         </choice>
       </filter>
     )
   }
-}
-
-function hasDefinition(input, observe) {
-  const data = observe(<DefinitionSource word={input} />)
-  return !!data.length
 }
 
 function filterOutput (option) {

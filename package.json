@@ -2,6 +2,11 @@
   "name": "lacona-finder",
   "version": "1.1.2",
   "description": "Lacona commands for opening apps, files, pref panes, and urls",
+  "lacona": {
+    "title": "Apps & Files",
+    "customPreferences": true,
+    "description": "Open and manage apps, files, and mounted volumes."
+  },
   "scripts": {
     "build": "babel src --out-dir lib",
     "clean": "rimraf lib",
@@ -9,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/brandonhorst/lacona-finder.git"
+    "url": "git+https://github.com/laconalabs/lacona-finder.git"
   },
   "keywords": [
     "lacona",
@@ -18,33 +23,40 @@
     "application",
     "launch"
   ],
-  "author": "@brandonhorst",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/brandonhorst/lacona-finder/issues"
+    "url": "https://github.com/laconalabs/lacona-finder/issues"
   },
-  "homepage": "https://github.com/brandonhorst/lacona-finder",
+  "homepage": "https://github.com/laconalabs/lacona-finder",
   "devDependencies": {
-    "babel-cli": "^6.10.1",
+    "babel-cli": "^6.18.0",
     "babel-plugin-transform-function-bind": "^6.8.0",
     "babel-plugin-transform-react-jsx": "^6.8.0",
-    "babel-preset-es2015": "^6.9.0",
-    "rimraf": "^2.5.3"
+    "babel-plugin-syntax-async-functions": "^6.13.0",
+    "babel-plugin-transform-async-to-generator": "^6.16.0",
+    "babel-preset-es2015-node": "^6.1.1",
+    "rimraf": "^2.5.4"
   },
   "dependencies": {
-    "elliptical": "^1.0.0",
-    "lacona-api": "^1.0.0",
-    "lacona-phrases": "^1.0.0",
-    "lodash": "^4.13.1",
-    "rxjs": "^5.0.0-beta.10"
+    "elliptical": "^2.2.1",
+    "lacona-api": "^1.5.1",
+    "lacona-phrases": "^1.1.0",
+    "lodash": "^4.16.6"
   },
   "babel": {
     "presets": [
-      "es2015"
+      "es2015-node"
     ],
     "plugins": [
       "transform-react-jsx",
-      "transform-function-bind"
+      "transform-function-bind",
+      "transform-async-to-generator",
+      "syntax-async-functions"
     ]
-  }
+  },
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "author": "Brandon Horst <brandonhorst@gmail.com> (http://brandonhorst.me/)"
 }

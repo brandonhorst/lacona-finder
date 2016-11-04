@@ -1,0 +1,158 @@
+{
+  "openHeader": {
+    "label": "Open",
+    "type": "header",
+    "examples": [
+      "open [![](/Applications/FaceTime.app/Contents/Resources/AppIcon.icns)FaceTime](application)",
+      "open [lacona.io](URL)",
+      "open [lacona.io](URL) in [![](/Applications/Safari.app/Contents/Resources/compass.icns)Safari](application)",
+      "open [![](/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/GenericDocumentIcon.icns)~/Documents/my_document.txt](path)",
+      "open [![](/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/GenericDocumentIcon.icns)~/Documents/my_document.txt](path) in [![](/Applications/TextEdit.app/Contents/Resources/Edit.icns)TextEdit](application)",
+      "open [![](/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/DownloadsFolder.icns)~/Downloads](path)",
+      "open [Macintosh HD](volume)",
+      "open [![](/System/Library/PreferencePanes/InternetAccounts.prefPane/Contents/Resources/InternetAccountsIcons.icns)Internet Accounts](preference pane)",
+      "open [![](img/cook.png)Tim Cook](contact)"
+    ]
+  },
+  "enableOpenApplications": {
+    "title": "Enable Open Applications",
+    "type": "boolean",
+    "default": true
+  },
+  "enableOpenURLs": {
+    "title": "Enable Open URLs",
+    "type": "boolean",
+    "default": true
+  },
+  "enableOpenFiles": {
+    "title": "Enable Open Files",
+    "type": "boolean",
+    "default": true
+  },
+  "enableOpenDirectories": {
+    "title": "Enable Open Folders",
+    "type": "boolean",
+    "default": true
+  },
+  "enableOpenVolumes": {
+    "title": "Enable Open Volumes",
+    "type": "boolean",
+    "default": true
+  },
+  "enableOpenPreferences": {
+    "title": "Enable Open System Preference",
+    "type": "boolean",
+    "default": true
+  },
+  "enableOpenContacts": {
+    "title": "Enable Open Contacts",
+    "type": "boolean",
+    "default": true,
+    "separatorBelow": true
+  },
+  "revealHeader": {
+    "label": "Reveal in Finder",
+    "type": "header",
+    "examples": [
+      "reveal [![](/Applications/FaceTime.app/Contents/Resources/AppIcon.icns)FaceTime](application) in [![](/System/Library/CoreServices/Finder.app/Contents/Resources/Finder.icns)Finder](application)",
+      "reveal [![](/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/GenericDocumentIcon.icns)~/Documents/my_document.txt](path) in [![](/System/Library/CoreServices/Finder.app/Contents/Resources/Finder.icns)Finder](application)",
+      "reveal [![](/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/MusicFolderIcon.icns)~/Music](path) in [![](/System/Library/CoreServices/Finder.app/Contents/Resources/Finder.icns)Finder](application)"
+    ]
+  },
+  "enableRevealApplications": {
+    "title": "Enable Reveal Applications",
+    "type": "boolean",
+    "default": true
+  },
+  "enableRevealFiles": {
+    "title": "Enable Reveal Files",
+    "type": "boolean",
+    "default": true
+  },
+  "enableRevealDirectories": {
+    "title": "Enable Reveal Folders",
+    "type": "boolean",
+    "default": true
+  },
+  "enableRevealVolumes": {
+    "title": "Enable Reveal Volumes",
+    "type": "boolean",
+    "default": true,
+    "separatorBelow": true
+  },
+  "fileOperationsHeader": {
+    "label": "File Operations",
+    "type": "header",
+    "examples": [
+      "copy [![](/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/GenericDocumentIcon.icns)~/Downloads/report.docx](path) to [![](/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/GenericFolderIcon.icns)~/Dropbox](directory)",
+      "move [![](/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/GenericDocumentIcon.icns)~/Desktop/tax_form.pdf](path) to [![](/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/GenericFolderIcon.icns)~/Documents/Forms](path)",
+      "delete [![](/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/GenericDocumentIcon.icns)~/Desktop/junk.txt](path)"
+    ]
+  },
+  "enableCopy": {
+    "title": "Enable Copy",
+    "type": "boolean",
+    "default": true
+  },
+  "enableMove": {
+    "title": "Enable Move",
+    "type": "boolean",
+    "default": true
+  },
+  "enableDelete": {
+    "title": "Enable Delete",
+    "type": "boolean",
+    "default": true,
+    "separatorBelow": true
+  },
+  "applicationManagementHeader": {
+    "label": "Application Management",
+    "type": "header",
+    "examples": [
+      "quit [![](/Applications/Safari.app/Contents/Resources/compass.icns)Safari](application)",
+      "switch to [![](/Applications/FaceTime.app/Contents/Resources/AppIcon.icns)FaceTime](application)",
+      "hide [![](/Applications/Notes.app/Contents/Resources/AppIcon.icns)Notes](application)",
+      "close [![](/Applications/Mail.app/Contents/Resources/ApplicationIcon.icns)Mail](application)",
+      "relaunch [![](/Applications/iTunes.app/Contents/Resources/iTunes.icns)iTunes](application)"
+    ]
+  },
+  "enableQuit": {
+    "title": "Enable Quit",
+    "type": "boolean",
+    "default": true
+  },
+  "enableActivate": {
+    "title": "Enable Switch To",
+    "type": "boolean",
+    "default": true
+  },
+  "enableHide": {
+    "title": "Enable Hide",
+    "type": "boolean",
+    "default": true
+  },
+  "enableClose": {
+    "title": "Enable Close",
+    "type": "boolean",
+    "default": true
+  },
+  "enableRelaunch": {
+    "title": "Enable Relaunch",
+    "type": "boolean",
+    "default": true,
+    "separatorBelow": true
+  },
+  "volumeManagementHeader": {
+    "label": "Volume Management",
+    "type": "header",
+    "examples": [
+      "eject [Google Chrome.dmg](volume)",
+      "eject all"
+    ]
+  },
+  "enableEject": {
+    "title": "Enable Eject",
+    "type": "boolean",
+    "default": true
+  }
+}
