@@ -3,14 +3,14 @@
     "label": "Open",
     "type": "header",
     "examples": [
-      "open [![](/Applications/FaceTime.app/Contents/Resources/AppIcon.icns)FaceTime](application)",
+      "open [![](img/facetime.tiff)FaceTime](application)",
       "open [lacona.io](URL)",
-      "open [lacona.io](URL) in [![](/Applications/Safari.app/Contents/Resources/compass.icns)Safari](application)",
-      "open [![](/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/GenericDocumentIcon.icns)~/Documents/my_document.txt](path)",
-      "open [![](/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/GenericDocumentIcon.icns)~/Documents/my_document.txt](path) in [![](/Applications/TextEdit.app/Contents/Resources/Edit.icns)TextEdit](application)",
-      "open [![](/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/DownloadsFolder.icns)~/Downloads](path)",
+      "open [lacona.io](URL) in [![](img/safari.tiff)Safari](application)",
+      "open [![](img/genericdocument.tiff)~/Documents/my_document.txt](path)",
+      "open [![](img/genericdocument.tiff)~/Documents/my_document.txt](path) in [![](img/textedit.tiff)TextEdit](application)",
+      "open [![](img/downloads.tiff)~/Downloads](path)",
       "open [Macintosh HD](volume)",
-      "open [![](/System/Library/PreferencePanes/InternetAccounts.prefPane/Contents/Resources/InternetAccountsIcons.icns)Internet Accounts](preference pane)",
+      "open [![](img/localization.tiff)Localization](preference pane)",
       "open [![](img/cook.png)Tim Cook](contact)"
     ]
   },
@@ -54,9 +54,9 @@
     "label": "Reveal in Finder",
     "type": "header",
     "examples": [
-      "reveal [![](/Applications/FaceTime.app/Contents/Resources/AppIcon.icns)FaceTime](application) in [![](/System/Library/CoreServices/Finder.app/Contents/Resources/Finder.icns)Finder](application)",
-      "reveal [![](/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/GenericDocumentIcon.icns)~/Documents/my_document.txt](path) in [![](/System/Library/CoreServices/Finder.app/Contents/Resources/Finder.icns)Finder](application)",
-      "reveal [![](/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/MusicFolderIcon.icns)~/Music](path) in [![](/System/Library/CoreServices/Finder.app/Contents/Resources/Finder.icns)Finder](application)"
+      "reveal [![](img/facetime.tiff)FaceTime](application) in [![](img/finder.tiff)Finder](application)",
+      "reveal [![](img/genericdocument.tiff)~/Documents/my_document.txt](path) in [![](img/finder.tiff)Finder](application)",
+      "reveal [![](img/music.tiff)~/Music](path) in [![](img/finder.tiff)Finder](application)"
     ]
   },
   "enableRevealApplications": {
@@ -84,9 +84,9 @@
     "label": "File Operations",
     "type": "header",
     "examples": [
-      "copy [![](/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/GenericDocumentIcon.icns)~/Downloads/report.docx](path) to [![](/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/GenericFolderIcon.icns)~/Dropbox](directory)",
-      "move [![](/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/GenericDocumentIcon.icns)~/Desktop/tax_form.pdf](path) to [![](/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/GenericFolderIcon.icns)~/Documents/Forms](path)",
-      "delete [![](/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/GenericDocumentIcon.icns)~/Desktop/junk.txt](path)"
+      "copy [![](img/genericdocument.tiff)~/Downloads/report.docx](path) to [![](img/genericfolder.tiff)~/Dropbox](directory)",
+      "move [![](img/genericdocument.tiff)~/Desktop/tax_form.pdf](path) to [![](img/genericfolder.tiff)~/Documents/Forms](path)",
+      "delete [![](img/genericdocument.tiff)~/Desktop/junk.txt](path)"
     ]
   },
   "enableCopy": {
@@ -109,11 +109,11 @@
     "label": "Application Management",
     "type": "header",
     "examples": [
-      "quit [![](/Applications/Safari.app/Contents/Resources/compass.icns)Safari](application)",
-      "switch to [![](/Applications/FaceTime.app/Contents/Resources/AppIcon.icns)FaceTime](application)",
-      "hide [![](/Applications/Notes.app/Contents/Resources/AppIcon.icns)Notes](application)",
-      "close [![](/Applications/Mail.app/Contents/Resources/ApplicationIcon.icns)Mail](application)",
-      "relaunch [![](/Applications/iTunes.app/Contents/Resources/iTunes.icns)iTunes](application)"
+      "quit [![](img/safari.tiff)Safari](application)",
+      "switch to [![](img/facetime.tiff)FaceTime](application)",
+      "hide [![](img/notes.tiff)Notes](application)",
+      "close [![](img/mail.tiff)Mail](application)",
+      "relaunch [![](img/itunes.tiff)iTunes](application)"
     ]
   },
   "enableQuit": {
